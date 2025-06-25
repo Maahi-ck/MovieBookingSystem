@@ -1,0 +1,69 @@
+<% layout('/layouts/boilerplate.ejs') %>
+
+<div class="container py-5">
+  <div class="row">
+    
+    <!-- Left: Admin Info -->
+    <div class="col-md-4 col-lg-3 mb-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Admin Profile</h5>
+          <p class="mb-2"><i class="bi bi-envelope"></i> <strong>Email:</strong><br> <%= adminEmail %></p>
+          <p><i class="bi bi-person-circle"></i> <strong>Username:</strong><br> <%= adminUsername %></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Pending Requests -->
+    <div class="col-md-8 col-lg-9">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title mb-4">Pending Requests</h5>
+
+          <% if (requests.length === 0) { %>
+            <div class="alert alert-info text-center">No pending requests.</div>
+          <% } else { %>
+            <div class="table-responsive">
+              <table class="table table-striped align-middle table-bordered">
+                <thead class="table-light">
+                  <tr>
+                    <th>Request ID</th>
+                    <th>Host Name</th>
+                    <th>Type</th>
+                    <th>Details</th>
+                    <th>Comment</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% requests.forEach(req => { %>
+                    <tr>
+                      <td><%= req.REQUEST_ID %></td>
+                      <td><%= req.HOST_NAME %></td>
+                      <td><span class="badge bg-secondary"><%= req.REQUEST_TYPE %></span></td>
+                      <td style="white-space: pre-wrap;"><%= JSON.stringify(JSON.parse(req.DETAILS || '{}'), null, 2) %></td>
+                      <td><%= req.COMMENT || '-' %></td>
+                      <td class="text-nowrap">
+                        <form action="/admin/requests/<%= req.REQUEST_ID %>/approve" method="POST" class="d-inline">
+                          <button type="submit" class="btn btn-success btn-sm">
+                            <i class="bi bi-check-circle"></i> Approve
+                          </button>
+                        </form>
+                        <form action="/admin/requests/<%= req.REQUEST_ID %>/reject" method="POST" class="d-inline">
+                          <button type="submit" class="btn btn-danger btn-sm">
+                            <i class="bi bi-x-circle"></i> Reject
+                          </button>
+                        </form>
+                      </td>
+                    </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            </div>
+          <% } %>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

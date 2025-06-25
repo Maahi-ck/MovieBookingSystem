@@ -1,0 +1,126 @@
+<% layout("/layouts/boilerplate.ejs") %>
+
+<div class="container py-4">
+
+  <!-- Search Bar -->
+  <div class="bg-light d-flex justify-content-between align-items-center p-3 mb-4" style="height: 10vh;">
+    <h5>Movies</h5>
+    <div class="position-relative" style="width: 250px;">
+      <input type="text"
+             class="form-control rounded-pill pe-5"
+             placeholder="Search..."
+             aria-label="Search movies"
+             id="search" autocomplete="off">
+      <button id="searchBtn" class="btn position-absolute top-50 end-0 translate-middle-y" type="button" aria-label="Search button">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+          <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Movies list container -->
+  <div class="row" id="movie-list">
+    <% if (data && data.length > 0) { %>
+      <% data.forEach(movie => { %>
+        <div class="col-md-4 mb-4">
+          <div class="card h-100" style="cursor:pointer;" onclick="window.location='/movies/<%= movie.MOVIE_ID %>'" role="button" tabindex="0" aria-label="View details for <%= movie.MOVIE_NAME %>">
+            <% if (movie.POSTER) { %>
+              <img src="<%= movie.POSTER %>" class="card-img-top" alt="<%= movie.MOVIE_NAME %> poster" style="height: 40vh; object-fit: cover;object-position: top;">
+            <% } else { %>
+              <div class="d-flex align-items-center justify-content-center bg-light text-muted" style="height: 40vh;">
+                <p class="m-0">No poster available</p>
+              </div>
+            <% } %>
+            <div class="card-body text-center">
+              <h5 class="card-title mb-0"><%= movie.MOVIE_NAME %></h5>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    <% } else { %>
+      <div class="col-12 text-center mt-4">
+        <% if (req.session.city && req.session.state) { %>
+          <p>No movies found for your location.</p>
+        <% } else { %>
+          <p>Please select your location to see movies.</p>
+        <% } %>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<script>
+  const searchInput = document.querySelector('#search');
+  const searchBtn = document.querySelector('#searchBtn');
+  const listContainer = document.querySelector('#movie-list');
+
+  // Function to fetch and render movies based on search term
+  async function fetchAndRenderMovies() {
+    const searchTerm = searchInput.value.trim();
+    const url = searchTerm === '' ? '/movies/all' : `/movies/search?searchTerm=${encodeURIComponent(searchTerm)}`;
+
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+      if(!data){
+          return;
+      }
+      renderMovies(data);
+    } catch (err) {
+      console.error('Error fetching Movies:', err);
+      listContainer.innerHTML = '<p class="text-center mt-4 text-danger">Failed to load movies.</p>';
+    }
+  }
+
+  // Debounce utility function
+  function debounce(fn, delay) {
+    let timeout;
+    return function (...args) {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => fn.apply(this, args), delay);
+    };
+  }
+
+  // Render movies dynamically inside the container
+  function renderMovies(data) {
+    listContainer.innerHTML = '';
+
+    if (!data || data.length === 0) {
+      listContainer.innerHTML = '<div class="col-12 text-center mt-4"><p>No results found.</p></div>';
+      return;
+    }
+
+    data.forEach(movie => {
+      const col = document.createElement('div');
+      col.className = 'col-md-4 mb-4';
+
+      col.innerHTML = `
+        <div class="card h-100" style="cursor:pointer;" onclick="window.location='/movies/${movie.MOVIE_ID}'" role="button" tabindex="0" aria-label="View details for ${movie.MOVIE_NAME}">
+          ${movie.POSTER
+            ? `<img src="${movie.POSTER}" class="card-img-top" alt="${movie.MOVIE_NAME} poster" style="height: 40vh; object-fit: cover;object-position:top">`
+            : `<div class="d-flex align-items-center justify-content-center bg-light text-muted" style="height: 40vh;">
+                <p class="m-0">No poster available</p>
+              </div>`
+          }
+          <div class="card-body text-center">
+            <h5 class="card-title mb-0">${movie.MOVIE_NAME}</h5>
+          </div>
+        </div>
+      `;
+
+      listContainer.appendChild(col);
+    });
+  }
+
+  // Attach event listeners
+  searchInput.addEventListener('input', debounce(fetchAndRenderMovies,0));
+  searchBtn.addEventListener('click', fetchAndRenderMovies);
+
+  // Optional: allow pressing Enter to trigger search
+  searchInput.addEventListener('keypress', e => {
+    if (e.key === 'Enter') {
+      fetchAndRenderMovies();
+    }
+  });
+</script>

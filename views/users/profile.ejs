@@ -1,0 +1,66 @@
+<% layout('./layouts/boilerplate.ejs') %>
+
+<div class="container py-5">
+  <div class="row g-5">
+
+    <!-- Left: User Profile Card -->
+    <div class="col-lg-5">
+      <div class="card card-bordered">
+        <div class="card-body text-center p-4">
+          <h4 class="text-dark fs-5 mb-1"><%= user.USER_NAME %></h4>
+          <small class="text-muted d-block mb-2">Email: <%= user.EMAIL %></small>
+
+          <hr>
+          <a href="/Users/Profile/settings" class="btn btn-outline-primary btn-sm mt-2">
+            <i class="bi bi-gear-fill me-1"></i> Settings
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Your Bookings -->
+    <div class="col-lg-7">
+      <div class="card card-bordered">
+        <div class="card-body p-4">
+          <h3 class="card-title text-secondary mb-4 border-bottom pb-2 fs-5">
+            <i class="bi bi-ticket-perforated me-2"></i>Your Bookings
+          </h3>
+
+          <% if (tickets && tickets.length > 0) { %>
+            <% tickets.sort((a, b) => new Date(a.SHOW_TIME) - new Date(b.SHOW_TIME)).forEach(ticket => { %>
+              <div class="card mb-3 card-bordered">
+                <div class="card-body">
+                  <h5 class="text-primary mb-1"><%= ticket.MOVIE_NAME %></h5>
+                  <p class="mb-1 text-muted"><i class="bi bi-building"></i> <%= ticket.THEATRE_NAME %></p>
+                  <p class="mb-1 text-muted"><i class="bi bi-building"></i> SCREEN ID :- <%= ticket.SCREEN_ID %></p>
+                  <p class="mb-1"><i class="bi bi-calendar-event"></i> <%= new Date(ticket.SHOW_TIME).toDateString() %></p>
+                  <p class="mb-1"><i class="bi bi-clock"></i> <%= new Date(ticket.SHOW_TIME).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) %></p>
+                  <p class="mb-1"><i class="bi bi-ticket-detailed"></i> Tickets Booked: <%= ticket.TOTAL_TICKETS %></p>
+                  <p class="mb-1"><i class="bi bi-cash-coin"></i> Total Price: ₹<%= ticket.TOTAL_PRICE %></p>
+                  <p class="mb-2"><i class="bi bi-person-seat"></i> Seats: <%= ticket.SEAT_LIST %></p>
+
+                  <% const isFuture = new Date(ticket.SHOW_TIME) > new Date(); %>
+                  <% if (isFuture) { %>
+                    <!-- Optional: cancel by show or individual tickets if needed -->
+                    <form action="/Users/Tickets/Show/<%= ticket.SHOW_ID %>?_method=DELETE" method="POST" class="d-inline">
+                      <button type="submit" class="btn btn-outline-danger btn-sm">
+                        <i class="bi bi-x-circle-fill me-1"></i> Cancel Booking
+                      </button>
+                    </form>
+                  <% } %>
+                  
+                </div>
+              </div>
+            <% }) %>
+          <% } else { %>
+            <div class="alert alert-warning text-center">
+              <i class="bi bi-info-circle me-2"></i>No bookings yet.
+            </div>
+          <% } %>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

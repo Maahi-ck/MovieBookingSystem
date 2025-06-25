@@ -1,0 +1,134 @@
+<% layout("/layouts/boilerplate.ejs") %>
+
+<div class="container py-5">
+  <h2 class="mb-4">Submit New Request</h2>
+
+  <!-- Add Theatre Request -->
+  <div class="card mb-4">
+    <div class="card-header"><strong>Request to Add Theatre</strong></div>
+    <div class="card-body">
+      <form action="/host/request/add-theatre" method="POST">
+        <div class="mb-3">
+          <label>Theatre Name</label>
+          <input type="text" class="form-control" name="theatre_name" required>
+        </div>
+        <div class="mb-3">
+          <label>City</label>
+          <input type="text" class="form-control" name="city" required>
+        </div>
+        <div class="mb-3">
+          <label>State</label>
+          <input type="text" class="form-control" name="state" required>
+        </div>
+        <div class="mb-3">
+          <label>Comment (optional)</label>
+          <textarea class="form-control" name="comment"></textarea>
+        </div>
+        <button class="btn btn-primary">Submit Theatre Request</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Screen Request -->
+  <div class="card mb-4">
+    <div class="card-header"><strong>Request to Add Screen</strong></div>
+    <div class="card-body">
+      <form action="/host/request/add-screen" method="POST">
+        <div class="mb-3">
+          <label>Select Theatre</label>
+          <select class="form-control" name="theatre_id" required>
+            <option value="" disabled selected>Choose a theatre</option>
+            <% theatres.forEach(theatre => { %>
+              <option value="<%= theatre.THEATRE_ID %>"><%= theatre.THEATRE_NAME %> - <%= theatre.CITY %>, <%= theatre.STATE %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label>Capacity</label>
+          <input type="number" class="form-control" name="capacity" min="1" required>
+        </div>
+        <div class="mb-3">
+          <label>Comment (optional)</label>
+          <textarea class="form-control" name="comment"></textarea>
+        </div>
+        <button class="btn btn-primary">Submit Screen Request</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Show Request -->
+  <div class="card mb-4">
+    <div class="card-header"><strong>Request to Add Show</strong></div>
+    <div class="card-body">
+      <form action="/host/request/add-show" method="POST">
+        <div class="mb-3">
+          <label>Select Screen</label>
+          <select class="form-control" name="screen_id" required>
+            <option value="" disabled selected>Choose a screen</option>
+            <% screens.forEach(screen => { %>
+              <option value="<%= screen.SCREEN_ID %>">
+                Theatre: <%= screen.THEATRE_NAME %> | Screen ID: <%= screen.SCREEN_ID %> | Capacity: <%= screen.CAPACITY %>
+              </option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label>Select Movie</label>
+          <select class="form-control" name="movie_id" required>
+            <option value="" disabled selected>Choose a movie</option>
+            <% movies.forEach(movie => { %>
+              <option value="<%= movie.MOVIE_ID %>"><%= movie.MOVIE_NAME %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label>Show Time (YYYY-MM-DD HH:MM:SS)</label>
+          <input type="text" class="form-control" name="show_time" placeholder="2025-05-30 19:30:00" required>
+        </div>
+        <div class="mb-3">
+          <label>Comment (optional)</label>
+          <textarea class="form-control" name="comment"></textarea>
+        </div>
+        <button class="btn btn-primary">Submit Show Request</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<!-- Update Theatre Request -->
+<div class="card mb-4">
+  <div class="card-header"><strong>Request to Update Theatre</strong></div>
+  <div class="card-body">
+    <form action="/host/request/update-theatre" method="POST">
+      <div class="mb-3">
+        <label>Select Theatre</label>
+        <select class="form-control" name="theatre_id" required>
+          <% theatres.forEach(theatre => { %>
+            <option value="<%= theatre.THEATRE_ID %>">
+              <%= theatre.THEATRE_NAME %> - <%= theatre.CITY %>, <%= theatre.STATE %>
+            </option>
+          <% }); %>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label>New Theatre Name</label>
+        <input type="text" class="form-control" name="theatre_name" required>
+      </div>
+      <div class="mb-3">
+        <label>New City</label>
+        <input type="text" class="form-control" name="city" required>
+      </div>
+      <div class="mb-3">
+        <label>New State</label>
+        <input type="text" class="form-control" name="state" required>
+      </div>
+      <div class="mb-3">
+        <label>Comment (optional)</label>
+        <textarea class="form-control" name="comment"></textarea>
+      </div>
+      <button class="btn btn-primary">Submit Update Request</button>
+    </form>
+  </div>
+</div>
+

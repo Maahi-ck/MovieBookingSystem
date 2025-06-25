@@ -1,0 +1,54 @@
+<% layout("/layouts/boilerplate.ejs") %>
+
+<div class="container py-4">
+  <h3 class="mb-4">My Theatres</h3>
+
+  <% if (theatres.length === 0) { %>
+    <p>No theatres found.</p>
+  <% } %>
+
+  <% theatres.forEach(theatre => { %>
+    <div class="card mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5><%= theatre.THEATRE_NAME %></h5>
+        <form method="POST" action="/host/request/delete-theatre/<%= theatre.THEATRE_ID %>">
+          <button class="btn btn-danger btn-sm" onclick="return confirm('Request deletion of this theatre?')">Request Delete Theatre</button>
+        </form>
+      </div>
+
+      <div class="card-body">
+        <h6>Screens:</h6>
+        <% if (theatre.screens.length === 0) { %>
+          <p>No screens available.</p>
+        <% } else { %>
+          <ul class="list-group mb-3">
+            <% theatre.screens.forEach(screen => { %>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                Screen ID: <%= screen.SCREEN_ID %>
+                <form method="POST" action="/host/request/delete-screen/<%= screen.SCREEN_ID %>">
+                  <button class="btn btn-outline-danger btn-sm" onclick="return confirm('Request deletion of this screen?')">Request Delete</button>
+                </form>
+              </li>
+            <% }) %>
+          </ul>
+        <% } %>
+
+        <h6>Shows:</h6>
+        <% if (theatre.shows.length === 0) { %>
+          <p>No shows scheduled.</p>
+        <% } else { %>
+          <ul class="list-group">
+            <% theatre.shows.forEach(show => { %>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                Show ID: <%= show.SHOW_ID %> - Movie: <strong><%= show.MOVIE_NAME %></strong> - Time: <%= show.SHOW_TIME_FORMATTED %>
+                <form method="POST" action="/host/request/delete-show/<%= show.SHOW_ID %>">
+                  <button class="btn btn-outline-danger btn-sm" onclick="return confirm('Request deletion of this show?')">Request Delete</button>
+                </form>
+              </li>
+            <% }) %>
+          </ul>
+        <% } %>
+      </div>
+    </div>
+  <% }) %>
+</div>

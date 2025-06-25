@@ -1,0 +1,75 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="container py-5">
+  <div class="row">
+    
+    <!-- Host Info -->
+    <div class="col-md-4 mb-4">
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <h5 class="card-title mb-3">Host Profile</h5>
+          <p class="mb-2">
+            <i class="bi bi-person-fill me-2 text-primary"></i><strong>Name:</strong><br> <%= host.HOST_NAME %>
+          </p>
+          <p>
+            <i class="bi bi-envelope-fill me-2 text-primary"></i><strong>Email:</strong><br> <%= host.HOST_EMAIL %>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Requests -->
+    <div class="col-md-8">
+      <h5 class="mb-4">Your Requests</h5>
+
+      <% if (!requests || requests.length === 0) { %>
+        <div class="alert alert-info text-center">No requests submitted yet.</div>
+      <% } else { %>
+        <% requests.forEach(req => {
+          let details = {};
+          try {
+            details = JSON.parse(req.DETAILS || '{}');
+          } catch (e) {
+            details = {};
+          }
+        %>
+          <div class="card mb-4 shadow-sm border-0">
+            <div class="card-header d-flex justify-content-between align-items-center bg-light">
+              <a href="/host/request/<%= req.REQUEST_ID %>" class="text-decoration-none text-dark">
+                <strong>#<%= req.REQUEST_ID %></strong>
+              </a>
+              <span class="badge 
+                <%= req.STATUS === 'PENDING' ? 'bg-warning text-dark' 
+                     : req.STATUS === 'APPROVED' ? 'bg-success' 
+                     : req.STATUS === 'REJECTED' ? 'bg-danger' 
+                     : 'bg-secondary' %>">
+                <%= req.STATUS %>
+              </span>
+            </div>
+            <div class="card-body">
+              <p><strong>Type:</strong> <span class="text-capitalize"><%= req.REQUEST_TYPE.replace(/_/g, ' ').toLowerCase() %></span></p>
+              <p><strong>Target ID:</strong> <%= req.TARGET_ID || '—' %></p>
+
+              <% if (Object.keys(details).length > 0) { %>
+                <p><strong>Details:</strong></p>
+                <div class="bg-light p-2 rounded border">
+                  <pre class="mb-0"><code><%= JSON.stringify(details, null, 2) %></code></pre>
+                </div>
+              <% } %>
+
+              <p class="mt-3 text-muted"><small><i class="bi bi-clock"></i> Created: <%= new Date(req.CREATED_AT).toLocaleString() %></small></p>
+
+              <% if (req.STATUS === 'PENDING') { %>
+                <form action="/host/request/<%= req.REQUEST_ID %>/cancel" method="POST" class="mt-2">
+                  <button class="btn btn-sm btn-outline-danger">
+                    <i class="bi bi-x-circle me-1"></i> Cancel Request
+                  </button>
+                </form>
+              <% } %>
+            </div>
+          </div>
+        <% }) %>
+      <% } %>
+    </div>
+  </div>
+</div>

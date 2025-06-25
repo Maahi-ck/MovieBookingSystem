@@ -1,0 +1,125 @@
+<% layout('/layouts/boilerplate') %>
+
+<style>
+  .booking-container {
+    max-width: 600px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    font-family: 'Montserrat', sans-serif;
+  }
+
+  h2 {
+    margin-bottom: 20px;
+    color: #ff4b2b;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .label {
+    font-weight: 600;
+    color: #333;
+  }
+
+  .info {
+    background: #f0f0f0;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+  }
+
+  input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+  }
+
+  .submit-btn {
+    background: linear-gradient(135deg, #ff416c, #ff4b2b);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s ease;
+    width: 100%;
+  }
+
+  .submit-btn:hover {
+    transform: scale(1.03);
+    box-shadow: 0 6px 20px rgba(255, 75, 43, 0.4);
+  }
+
+  .housefull {
+    color: red;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 30px;
+  }
+</style>
+
+<div class="booking-container">
+  <h2>Book Tickets</h2>
+
+  <% 
+    const availableSeats = show.CAPACITY - show.TICKETS_BOOKED;
+    const ticketPrice = 150; // you can also fetch this dynamically
+  %>
+
+  <% if (availableSeats <= 0) { %>
+    <div class="housefull">Housefull! No seats available for this show.</div>
+  <% } else { %>
+    <form method="POST" action="/movies/book/<%= show.SHOW_ID %>">
+      <div class="form-group">
+        <div class="label">Movie:</div>
+        <div class="info"><%= show.MOVIE_NAME %></div>
+      </div>
+
+      <div class="form-group">
+        <div class="label">Theatre:</div>
+        <div class="info"><%= show.THEATRE_NAME %></div>
+      </div>
+
+      <div class="form-group">
+        <div class="label">Screen:</div>
+        <div class="info">Screen ID: <%= show.SCREEN_ID %></div>
+      </div>
+
+      <div class="form-group">
+        <div class="label">Show Time:</div>
+        <div class="info"><%= new Date(show.SHOW_TIME).toLocaleString() %></div>
+      </div>
+
+      <div class="form-group">
+        <div class="label">Available Seats:</div>
+        <div class="info"><%= availableSeats %></div>
+      </div>
+
+      <div class="form-group">
+        <div class="label">Number of Tickets:</div>
+        <input 
+          type="number" 
+          name="tickets" 
+          min="1" 
+          max="<%= availableSeats %>" 
+          required 
+        />
+      </div>
+
+      <div class="form-group">
+        <div class="label">Price per Ticket:</div>
+        <div class="info">₹<%= ticketPrice %></div>
+      </div>
+
+      <button type="submit" class="submit-btn">Pay & Book</button>
+    </form>
+  <% } %>
+</div>

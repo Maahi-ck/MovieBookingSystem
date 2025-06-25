@@ -1,0 +1,281 @@
+<% layout('/layouts/boilerplate.ejs') %>
+
+<div class="container py-5">
+  <div class="row align-items-center">
+    <!-- Poster -->
+    <div class="col-md-4 mb-4 mb-lg-0 position-relative shadow-sm">
+      <div class="poster-wrapper position-relative rounded overflow-hidden w-100 h-100" style="aspect-ratio: 2/3;">
+        <img 
+          src="<%= movie.POSTER %>" 
+          alt="<%= movie.MOVIE_NAME %> Poster" 
+          class="w-100 h-100 object-fit-cover poster-zoom rounded"
+          loading="lazy"
+        />
+        <div class="poster-gradient-overlay"></div>
+      </div>
+    </div>
+
+    <!-- Movie Info -->
+    <div class="col-lg-7">
+      <h1 class="display-4 fw-semibold text-bms-pink mb-3"><%= movie.MOVIE_NAME %></h1>
+
+      <p class="lead text-muted mb-4">
+        <%= movie.DESCRIPTION %>
+      </p>
+
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+          <div class="d-flex align-items-center">
+            <i class="bi bi-film fs-4 text-bms-pink me-2"></i>
+            <div>
+              <small class="fw-semibold text-uppercase">Genre</small><br>
+              <span><%= movie.GENRE %></span>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="d-flex align-items-center">
+            <i class="bi bi-translate fs-4 text-bms-pink me-2"></i>
+            <div>
+              <small class="fw-semibold text-uppercase">Language</small><br>
+              <span><%= movie.LANGUAGE %></span>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="d-flex align-items-center">
+            <i class="bi bi-clock fs-4 text-bms-pink me-2"></i>
+            <div>
+              <small class="fw-semibold text-uppercase">Duration</small><br>
+              <span><%= movie.DURATION %> mins</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="d-flex align-items-center">
+            <i class="bi bi-calendar3 fs-4 text-bms-pink me-2"></i>
+            <div>
+              <small class="fw-semibold text-uppercase">Release</small><br>
+              <span><%= new Date(movie.RELEASE_DATE).toLocaleDateString() %></span>
+            </div>
+          </div>
+        </div>
+      </div>
+     <!-- Add this below the movie title or description -->
+
+<div class="mb-3 d-flex align-items-center">
+  <strong class="me-2">Average Rating:</strong>
+  <% if (avgRating) { %>
+    <% const fullStars = Math.floor(avgRating); %>
+    <% const halfStar = (avgRating - fullStars) >= 0.5; %>
+    <% const emptyStars = 5 - fullStars - (halfStar ? 1 : 0); %>
+
+    <!-- Full stars -->
+    <% for(let i = 0; i < fullStars; i++) { %>
+      <i class="bi bi-star-fill text-warning"></i>
+    <% } %>
+
+    <!-- Half star if needed -->
+    <% if (halfStar) { %>
+      <i class="bi bi-star-half text-warning"></i>
+    <% } %>
+
+    <!-- Empty stars -->
+    <% for(let i = 0; i < emptyStars; i++) { %>
+      <i class="bi bi-star text-muted"></i>
+    <% } %>
+
+    <span class="ms-2 fw-semibold"><%= avgRating %> / 5</span>
+  <% } else { %>
+    <span class="text-muted fst-italic">No rating yet</span>
+  <% } %>
+</div>
+
+      <a href="/movies/book/movies/<%= movie.MOVIE_ID %>" class="btn btn-bms-pink btn-lg px-5 shadow-sm mt-5">
+        <i class="bi bi-ticket-fill me-2"></i> Book Tickets
+      </a>
+    </div>
+  </div>
+
+
+  <!-- Reviews Section -->
+  <section class="mt-5 pt-5 border-top">
+    <h2 class="fw-light text-center mb-4 text-bms-pink" style="letter-spacing: 1px;">
+      Reviews
+    </h2>
+
+    <!-- Reviews Container with Horizontal Scroll -->
+    <div class="reviews-container d-flex gap-3 overflow-auto pb-3">
+     <% reviews.forEach(review => { %>
+  <div class="card review-card p-3 flex-shrink-0" style="min-width: 300px; max-width: 300px;">
+    <div class="d-flex align-items-center mb-2">
+      <strong><%= review.USER_NAME %></strong>
+      <small class="text-muted ms-auto"><%= new Date(review.CREATED_AT).toLocaleDateString() %></small>
+    </div>
+    <p><%= review.COMMENT %></p>
+    <div class="d-flex align-items-center justify-content-between">
+      <div>
+        <% for(let i=1; i<=5; i++) { %>
+          <% if(i <= review.RATING) { %>
+            <i class="bi bi-star-fill text-warning"></i>
+          <% } else { %>
+            <i class="bi bi-star text-muted"></i>
+          <% } %>
+        <% } %>
+      </div>
+     
+      <% if (req.session.user && req.session.user.USER_ID === review.USER_ID) { %>
+        <form action="/movies/<%= movie.MOVIE_ID %>/reviews/<%= review.REVIEW_ID %>?_method=DELETE" method="POST" class="ms-2">
+          <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2" style="font-size: 0.75rem;">Delete</button>
+        </form>
+      <% } %>
+    </div>
+  </div>
+<% }) %>
+
+    </div>
+
+    <!-- Review Submission Form -->
+    <% if (req.session.user) { %>
+      <form action="/movies/<%= movie.MOVIE_ID %>/reviews" method="POST" class="mt-4">
+        <h5 class="mb-3 text-bms-pink">Leave a Review</h5>
+        <div class="mb-3">
+          <label for="rating" class="form-label">Rating</label>
+          <select name="rating" id="rating" class="form-select" required>
+            <option value="" disabled selected>Select rating</option>
+            <% for(let i=5; i>=1; i--) { %>
+              <option value="<%= i %>"><%= i %> Star<%= i > 1 ? 's' : '' %></option>
+            <% } %>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="comment" class="form-label">Comment</label>
+          <textarea name="comment" id="comment" rows="3" class="form-control" placeholder="Write your review here..." required></textarea>
+        </div>
+        <button type="submit" class="btn btn-bms-pink">Submit Review</button>
+      </form>
+    <% } else { %>
+      <p class="mt-4 text-center text-muted">Please <a href="/Users/login">log in</a> to leave a review.</p>
+    <% } %>
+  </section>
+
+   <!-- Cast Section -->
+  <section class="mt-5 pt-5 border-top">
+    <h2 class="fw-light text-center mb-5 text-bms-pink" style="letter-spacing: 1px;">
+      Cast
+    </h2>
+    <div class="row g-4 justify-content-center">
+      <% cast.forEach(actor => { %>
+        <div class="col-6 col-sm-4 col-md-3 col-lg-2 text-center" onclick="window.location.href='/movies/actors/<%= actor.ACTOR_ID %>'" >
+          <div class="cast-card shadow-sm p-3 bg-white rounded h-100">
+            <img 
+              src="<%= actor.IMAGE %>" 
+              alt="<%= actor.NAME %>" 
+              class="rounded-circle cast-img mb-3"
+              loading="lazy"
+            />
+            <h6 class="fw-light mb-1 text-bms-pink"><%= actor.NAME %></h6>
+            <p class="text-muted fst-italic small mb-0"><%= actor.ROLE_NAME %></p>
+          </div>
+        </div>
+      <% }) %>
+      <% if(cast.length==0){ %>
+         <div class="row g-4 justify-content-center">
+       <p class="text-muted fst-italic large mb-0 m-auto"> no details found</p>
+       </div>
+      <% } %>
+    </div>
+  </section>
+</div>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+  body {
+    background-color: #fefefe;
+    color: #444;
+  }
+
+  :root {
+    --bms-pink: #ff3c6e;
+  }
+
+  .text-bms-pink {
+    color: var(--bms-pink);
+  }
+
+  .bg-bms-pink {
+    background-color: var(--bms-pink);
+  }
+
+  .btn-bms-pink {
+    background-color: var(--bms-pink);
+    color: #fff;
+    border-radius: 2rem;
+    transition: background 0.3s ease;
+  }
+
+  .btn-bms-pink:hover {
+    background-color: #e2315e;
+    color: #fff;
+  }
+
+  .poster-gradient-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    height:40vh;
+    border-radius: 0.5rem;
+    pointer-events: none;
+  }
+
+  .poster-zoom {
+    transition: transform 0.4s ease, filter 0.4s ease;
+  }
+
+  .poster-zoom:hover {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+  }
+
+  .cast-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .cast-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(255, 60, 110, 0.3);
+  }
+
+  .cast-img {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border: 4px solid var(--bms-pink);
+  }
+
+  .reviews-container {
+    scrollbar-width: thin;
+    scrollbar-color: var(--bms-pink) #eee;
+  }
+
+  .reviews-container::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  .reviews-container::-webkit-scrollbar-thumb {
+    background-color: var(--bms-pink);
+    border-radius: 4px;
+  }
+
+  .review-card {
+    background: #fff;
+    border-radius: 0.5rem;
+    box-shadow: 0 0 8px rgb(0 0 0 / 0.1);
+  }
+
+  @media (max-width: 575.98px) {
+    .display-4 {
+      font-size: 2rem;
+    }
+  }
+</style>

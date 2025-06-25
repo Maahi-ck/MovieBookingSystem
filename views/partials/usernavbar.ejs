@@ -1,0 +1,57 @@
+<nav class="navbar fixed-top navbar-expand-lg bg-dark border-bottom border-body" data-bs-theme="dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/">BookMyShow</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+      aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <div class="navbar-nav ms-auto">
+        <a class="nav-link active" aria-current="page" href="/">Home</a>
+        <a class="nav-link active" aria-current="page" href="/movies">Movies</a>
+        <a class="nav-link active" href="#" data-bs-toggle="modal" data-bs-target="#locationModal">Location</a>
+      
+        
+     
+        
+        <% if(req.session.user){ %>
+          <a class="nav-link" href="/Users/Profile">Profile</a>
+          <a class="nav-link" href="/Users/logout">Logout</a>
+          <% }else{ %>
+            <a class="nav-link" href="/Users/login">Sign in</a>
+            <a class="nav-link" href="/Users/Register">Register</a>
+            <% } %>
+              
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Location Modal -->
+<div class="modal fade" id="locationModal" tabindex="-1" aria-labelledby="locationModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header">
+        <h5 class="modal-title" id="locationModalLabel">Set Your Location</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="/Users/setlocation" method="POST"> 
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="city" class="form-label">City</label>
+            <input type="text" name="city" id="city" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="state" class="form-label">State</label>
+            <input type="text" name="state" id="state" class="form-control" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-danger">Save Location</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+

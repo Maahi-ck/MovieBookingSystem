@@ -1,0 +1,136 @@
+<% layout("/layouts/boilerplate.ejs") %>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap');
+
+  
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #222;
+      margin-bottom: 40px;
+      font-weight: 600;
+      letter-spacing: 1.2px;
+    }
+
+    .theatre-block {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      padding: 30px 25px;
+      margin-bottom: 40px;
+    }
+
+    .theatre-name {
+      font-size: 24px;
+      font-weight: 700;
+      color: #ff4b2b;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #ff4b2b;
+      padding-bottom: 8px;
+    }
+
+    .screen-block {
+      margin-bottom: 25px;
+    }
+
+    .screen-name {
+      font-size: 18px;
+      font-weight: 600;
+      color: #444;
+      margin-bottom: 12px;
+    }
+
+    .showtimes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .showtime-button {
+      background: linear-gradient(135deg, #ff416c, #ff4b2b);
+      border: none;
+      color: white;
+      padding: 10px 18px;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: 0 6px 15px rgba(255, 75, 43, 0.4);
+      transition: box-shadow 0.3s ease, transform 0.2s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      min-width: 90px;
+      text-align: center;
+    }
+
+    .showtime-button:hover {
+      box-shadow: 0 8px 25px rgba(255, 75, 43, 0.7);
+      transform: scale(1.1);
+    }
+
+    .no-shows {
+      text-align: center;
+      font-size: 18px;
+      color: #999;
+      margin-top: 50px;
+      font-style: italic;
+    }
+  </style>
+
+  <div class="container">
+    <h1>Available Shows</h1>
+
+    <% if (shows.length === 0) { %>
+      <p class="no-shows">No shows available for this movie in your city/state.</p>
+    <% } else { %>
+      <% 
+        // Group shows by Theatre and then by Screen
+        const grouped = {};
+        shows.forEach(show => {
+          if (!grouped[show.THEATRE_NAME]) grouped[show.THEATRE_NAME] = {};
+          if (!grouped[show.THEATRE_NAME][show.SCREEN_ID]) grouped[show.THEATRE_NAME][show.SCREEN_ID] = [];
+          grouped[show.THEATRE_NAME][show.SCREEN_ID].push(show);
+        });
+      %>
+
+      <% Object.keys(grouped).forEach(theatre => { %>
+        <div class="theatre-block">
+          <div class="theatre-name"><%= theatre %></div>
+
+          <% Object.keys(grouped[theatre]).forEach(screenId => { %>
+            <div class="screen-block">
+              <div class="screen-name">Screen ID: <%= screenId %></div>
+              <div class="showtimes">
+                <% grouped[theatre][screenId].forEach(show => { %>
+                  <% 
+                    const showTime = new Date(show.SHOW_TIME);
+                    const hours = showTime.getHours();
+                    const minutes = showTime.getMinutes().toString().padStart(2, '0');
+                    const ampm = hours >= 12 ? 'PM' : 'AM';
+                    const displayHour = hours % 12 || 12;
+                    const timeStr = `${displayHour}:${minutes} ${ampm}`;
+                  %>
+                  <a href="/movies/book/shows/<%= show.SHOW_ID %>" class="showtime-button" title="<%= showTime.toLocaleString() %>">
+                    <%= timeStr %>
+                  </a>
+                <% }) %>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      <% }) %>
+    <% } %>
+  </div>
+
+
+
+
