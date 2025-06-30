@@ -45,31 +45,7 @@ A full-featured web application enabling movie-goers to browse and book shows, t
 
 ---
 
-## 📁 Project Structure
-
-.
-├── config/
-│ └── db.js # MySQL connector
-├── routes/
-│ ├── users.js # Authentication, booking, profile, reviews
-│ ├── movies.js # Browse movies, show details, movie APIs
-│ ├── host.js # Host panel & request workflow
-│ └── admin.js # Admin approvals/rejections
-├── views/
-│ ├── users/ # Login, register, forgot/reset password, profile
-│ ├── movies/ # Movie list, detail, book, shows
-│ ├── host/ # Host dashboard, requests
-│ └── admin/ # Admin dashboard
-├── public/ # CSS, JS, images
-├── AppError.js # Custom error class
-├── catchAsync.js # Async wrapper for preventing unhandled rejections
-├── server.js # App entrypoint
-└── .env # Credentials & secrets
-
-yaml
-Copy
-Edit
-
+<pre lang="markdown"> ``` 📁 Project Structure . ├── config/ │ └── db.js # MySQL connector ├── routes/ │ ├── users.js # Authentication, booking, profile, reviews │ ├── movies.js # Browse movies, show details, movie APIs │ ├── host.js # Host panel & request workflow │ └── admin.js # Admin approvals/rejections ├── views/ │ ├── users/ # Login, register, forgot/reset password, profile │ ├── movies/ # Movie list, detail, book, shows │ ├── host/ # Host dashboard, requests │ └── admin/ # Admin dashboard ├── public/ # CSS, JS, images ├── AppError.js # Custom error class ├── catchAsync.js # Async wrapper for preventing unhandled rejections ├── server.js # App entrypoint └── .env # Credentials & secrets ``` </pre>
 ---
 
 ## ⚙️ Getting Started
