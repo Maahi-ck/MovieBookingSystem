@@ -1,7 +1,7 @@
 <% layout("/layouts/boilerplate.ejs") %>
 
 <div class="container py-4">
-
+ 
   <!-- Search Bar -->
   <div class="bg-light d-flex justify-content-between align-items-center p-3 mb-4" style="height: 10vh;">
     <h5>Movies</h5>
@@ -18,6 +18,52 @@
       </button>
     </div>
   </div>
+
+  <!-- Filter Section -->
+<div class="card p-3 mb-4">
+  <div class="row g-3">
+    <!-- Genre Filter -->
+    <div class="col-md-3">
+      <label for="genre" class="form-label">Genre</label>
+      <select class="form-select" id="genre">
+        <option value="">All</option>
+        <option>Action/Drama</option>
+        <option>Animation/Adventure</option>
+        <option>Action/Thriller</option>
+        <option>Comedy/Drama</option>
+        <option>Mystery/Crime</option>
+      </select>
+    </div>
+
+    <!-- Duration Filter -->
+    <div class="col-md-3">
+      <label for="duration" class="form-label">Duration (max minutes)</label>
+      <input type="number" class="form-control" id="duration" placeholder="e.g., 120">
+    </div>
+
+    <!-- Language Filter -->
+    <div class="col-md-3">
+      <label for="language" class="form-label">Language</label>
+      <select class="form-select" id="language">
+        <option value="">All</option>
+        <option>Telugu</option>
+        <option>Tamil</option>
+        <option>English</option>
+      </select>
+    </div>
+
+    <!-- Show Time Filter -->
+    <div class="col-md-3">
+      <label for="showTime" class="form-label">Show Time (after)</label>
+      <input type="datetime-local" class="form-control" id="showTime">
+    </div>
+
+    <div class="col-12 text-end">
+      <button class="btn btn-primary mt-3" id="filterBtn">Apply Filters</button>
+    </div>
+  </div>
+</div>
+
 
   <!-- Movies list container -->
   <div class="row" id="movie-list">
@@ -124,3 +170,45 @@
     }
   });
 </script>
+
+<script>
+  const genreInput = document.querySelector('#genre');
+  const durationInput = document.querySelector('#duration');
+  const languageInput = document.querySelector('#language');
+  const showTimeInput = document.querySelector('#showTime');
+  const filterBtn = document.querySelector('#filterBtn');
+
+  async function fetchAndRenderMovies() {
+    const searchTerm = searchInput.value.trim();
+    const genre = genreInput.value;
+    const duration = durationInput.value;
+    const language = languageInput.value;
+    const showTime = showTimeInput.value;
+
+    const params = new URLSearchParams();
+
+    if (searchTerm) params.append('searchTerm', searchTerm);
+    if (genre) params.append('genre', genre);
+    if (duration) params.append('maxDuration', duration);
+    if (language) params.append('language', language);
+    if (showTime) params.append('showTimeAfter', showTime);
+
+    const url = `/movies/search?${params.toString()}`;
+
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+      if (!data) return;
+      renderMovies(data);
+    } catch (err) {
+      console.error('Error fetching Movies:', err);
+      listContainer.innerHTML = '<p class="text-center mt-4 text-danger">Failed to load movies.</p>';
+    }
+  }
+
+  // Event listeners
+  searchInput.addEventListener('input', debounce(fetchAndRenderMovies, 300));
+  searchBtn.addEventListener('click', fetchAndRenderMovies);
+  filterBtn.addEventListener('click', fetchAndRenderMovies);
+</script>
+

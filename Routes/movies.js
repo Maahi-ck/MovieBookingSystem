@@ -75,31 +75,63 @@ router.get('/all', catchAsync(async (req, res) => {
 }));
 
 router.get('/search', catchAsync(async (req, res) => {
-  
-    const city = req.session.city;
-    const state = req.session.state;
-    const searchTerm = req.query.searchTerm || '';
+  const city = req.session.city;
+  const state = req.session.state;
 
-    if (!city || !state) {
-      return res.status(400).json({ error: 'City and state are required in session.' });
-    }
+  const {
+    searchTerm = '',
+    genre,
+    maxDuration,
+    language,
+    showTimeAfter
+  } = req.query;
 
-    // Search movies by name (case-insensitive) playing in current city and state
-    const sql = `
-      SELECT DISTINCT m.MOVIE_ID, m.MOVIE_NAME, m.POSTER
-      FROM SHOWS s
-      JOIN SCREEN sc ON s.SCREEN_ID = sc.SCREEN_ID
-      JOIN THEATRE t ON sc.THEATRE_ID = t.THEATRE_ID
-      JOIN MOVIE m ON s.MOVIE_ID = m.MOVIE_ID
-      WHERE t.CITY = ? AND t.STATE = ? AND m.MOVIE_NAME LIKE ?
-    `;
+  if (!city || !state) {
+    return res.status(400).json({ error: 'City and state are required in session.' });
+  }
 
-    const likeSearch = `%${searchTerm}%`;
-    const [movies] = await db.query(sql, [city, state, likeSearch]);
+  let sql = `
+    SELECT DISTINCT m.MOVIE_ID, m.MOVIE_NAME, m.POSTER
+    FROM SHOWS s
+    JOIN SCREEN sc ON s.SCREEN_ID = sc.SCREEN_ID
+    JOIN THEATRE t ON sc.THEATRE_ID = t.THEATRE_ID
+    JOIN MOVIE m ON s.MOVIE_ID = m.MOVIE_ID
+    WHERE t.CITY = ? AND t.STATE = ?
+      AND m.MOVIE_NAME LIKE ?
+  `;
 
+  const params = [city, state, `%${searchTerm}%`];
+
+  if (genre) {
+    sql += ` AND m.GENRE = ?`;
+    params.push(genre);
+  }
+
+  if (maxDuration) {
+    sql += ` AND m.DURATION <= ?`;
+    params.push(Number(maxDuration));
+  }
+
+  if (language) {
+    sql += ` AND m.LANGUAGE = ?`;
+    params.push(language);
+  }
+
+  if (showTimeAfter) {
+    sql += ` AND s.SHOW_TIME >= ?`;
+    params.push(showTimeAfter);
+  }
+
+  try {
+    const [movies] = await db.query(sql, params);
     res.json(movies);
- 
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch movies.' });
+  }
 }));
+
+
 
 router.get('/', catchAsync(async (req, res) => {
   const { city, state } = req.session;
