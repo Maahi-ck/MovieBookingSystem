@@ -33,6 +33,14 @@ A full-featured web application enabling movie-goers to browse and book shows, t
 
 ---
 
+## 🎬 Screenshots
+
+You can view screenshots of the project [here](https://drive.google.com/drive/folders/1yS4skCqusPwdfvI5dnyh64qLQNWkciNO?usp=drive_link).
+
+> The screenshots highlight key features of the system.
+
+---
+
 ## 🏗️ Tech Stack
 
 | Category        | Technologies                                |
