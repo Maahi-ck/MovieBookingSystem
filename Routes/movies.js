@@ -160,14 +160,14 @@ router.get('/:id', catchAsync(async (req, res) => {
    
 
     // Fetch movie details
-    const [movieDetails] = await db.query(`
+    const [[movieDetails]] = await db.query(`
       SELECT 
         MOVIE_ID, MOVIE_NAME, POSTER, DURATION, LANGUAGE, GENRE, RELEASE_DATE, DESCRIPTION
       FROM MOVIE
       WHERE MOVIE_ID = ?
     `, [movieId]);
 
-    if (!movieDetails[0]) {
+    if (!movieDetails) {
       return res.status(404).send("MOVIE NOT FOUND");
     }
 

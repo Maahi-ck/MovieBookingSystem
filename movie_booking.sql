@@ -15,6 +15,14 @@ CREATE TABLE USERS (
     PASSWORD TEXT
 );
 
+-- HOST table
+CREATE TABLE HOST (
+    HOST_ID INT PRIMARY KEY AUTO_INCREMENT,
+    HOST_NAME VARCHAR(50),
+    EMAIL VARCHAR(50) UNIQUE NOT NULL,
+    PASSWORD TEXT
+);
+
 -- THEATRE table
 CREATE TABLE THEATRE (
     THEATRE_ID INT PRIMARY KEY AUTO_INCREMENT,
@@ -25,13 +33,7 @@ CREATE TABLE THEATRE (
     FOREIGN KEY (THEATRE_HOST) REFERENCES HOST(HOST_ID) ON DELETE CASCADE 
 );
 
--- HOST table
-CREATE TABLE HOST (
-    HOST_ID INT PRIMARY KEY AUTO_INCREMENT,
-    HOST_NAME VARCHAR(50),
-    EMAIL VARCHAR(50) UNIQUE NOT NULL,
-    PASSWORD TEXT
-);
+
  
 CREATE TABLE HOST_REQUESTS (
     REQUEST_ID INT PRIMARY KEY AUTO_INCREMENT,
@@ -46,7 +48,7 @@ CREATE TABLE HOST_REQUESTS (
     STATUS ENUM('PENDING', 'APPROVED', 'REJECTED', 'CANCELLED') DEFAULT 'PENDING',
     CREATED_AT TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (HOST_ID) REFERENCES HOST(HOST_ID) ON DELETE CASCADE,
-    FOREIGN KEY (TARGET_ID) REFERENCES THEATRE(THEATRE_ID) ON DELETE CASCADE,
+    FOREIGN KEY (TARGET_ID) REFERENCES THEATRE(THEATRE_ID) ON DELETE CASCADE
 );
 
 
@@ -132,37 +134,6 @@ CREATE TABLE REVIEWS (
 );
 
 
--- USERS
-CREATE UNIQUE INDEX idx_users_user_id ON USERS(USER_ID);
-
--- HOST
-CREATE UNIQUE INDEX idx_host_host_id ON HOST(HOST_ID);
-
--- ADMIN
-CREATE UNIQUE INDEX idx_admin_admin_id ON ADMIN(ADMIN_ID);
-
--- THEATRE
-CREATE UNIQUE INDEX idx_theatre_theatre_id ON THEATRE(THEATRE_ID);
-
--- SCREEN
-CREATE UNIQUE INDEX idx_screen_screen_id ON SCREEN(SCREEN_ID);
-
--- ACTORS
-CREATE UNIQUE INDEX idx_actors_actor_id ON ACTORS(ACTOR_ID);
-
--- ROLES
-CREATE UNIQUE INDEX idx_roles_role_id ON ROLES(ROLE_ID);
-
--- MOVIE
-CREATE UNIQUE INDEX idx_movie_movie_id ON MOVIE(MOVIE_ID);
-
--- SHOWS
-CREATE UNIQUE INDEX idx_shows_show_id ON SHOWS(SHOW_ID);
-
--- TICKET
-CREATE UNIQUE INDEX idx_ticket_ticket_id ON TICKET(TICKET_ID);
-
-
 -- Foreign keys in THEATRE
 CREATE INDEX idx_theatre_host_id ON THEATRE(THEATRE_HOST);
 
@@ -232,8 +203,8 @@ INSERT INTO MOVIE (MOVIE_NAME, POSTER, DURATION, LANGUAGE, GENRE, RELEASE_DATE, 
 -- Insert Actors
 INSERT INTO ACTORS (NAME, IMAGE, DESCRIPTION) VALUES
 ('Thalpathy Vjay', 'https://www.wallsnapy.com/img_gallery/leo-movie-thalapathi-dance-wallpaper-hd-1080p-5693021.jpg', 'Indian film actor known for his work in Telugu cinema.'),
-('Trisha', 'https://preview.redd.it/leo-hd-stills-v0-o9ymv1n8jztb1.jpg?width=640&crop=smart&auto=webp&s=e210456f3e87822d58646b795124935ac077eead', 'Indian actress and model who has appeared in Tamil and Telugu films.'),
-('Eeswar', 'https://upload.wikimedia.org/wikipedia/commons/a/aa/Eeswar_Actor.jpg', 'Telugu actor known for his role in Suryapet Junction.'),
+('Trishaa', 'https://preview.redd.it/leo-hd-stills-v0-o9ymv1n8jztb1.jpg?width=640&crop=smart&auto=webp&s=e210456f3e87822d58646b795124935ac077eead', 'Indian actress and model who has appeared in Tamil and Telugu films.'),
+('SanjayDutt', 'https://assets.gqindia.com/photos/652f86ce13009e205f39c36b/master/w_1600%2Cc_limit/Leo-cast-fees_006.jpg', 'Telugu actor known for his role in Suryapet Junction.'),
 ('Naina Sarwar', 'https://upload.wikimedia.org/wikipedia/commons/e/e4/Naina_Sarwar.jpg', 'Indian actress known for her role in Suryapet Junction.'),
 ('Abhimanyu Singh', 'https://upload.wikimedia.org/wikipedia/commons/2/29/Abhimanyu_Singh.jpg', 'Indian actor known for his role in Suryapet Junction.');
 

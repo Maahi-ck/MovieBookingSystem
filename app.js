@@ -25,18 +25,30 @@ const AppError = require("./AppError.js");
 const catchAsync = require("./catchAsync.js");
 const flashMiddleWare = require('connect-flash');
 
-
 const session = require('express-session');
+const MySQLStore = require('express-mysql-session')(session);
+
+
+const sessionStore = new MySQLStore({
+  host: process.env.HOST,
+  user: process.env.USER,
+  password: process.env.PASSWORD,
+  database: process.env.DATABASE
+});
+
 const sessionConfig = {
-  secret: "thisismysecret", resave: false, saveUninitialized: false,
+  secret: process.env.SESSION_SECRET || 'thisismysecret',
+  store: sessionStore,
+  resave: false,
+  saveUninitialized: false,
   cookie: {
-    httppOnly: true,
-    expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
-    maxAge: 1000 * 60 * 60 * 24 * 7,
+    httpOnly: true,
+    maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
   }
 };
 
 app.use(session(sessionConfig));
+
 app.use(flashMiddleWare());
 
 
