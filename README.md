@@ -11,7 +11,7 @@ A full-featured web application enabling movie-goers to browse and book shows, t
 - Sign‑up, login, logout using email/password (hashed with bcrypt)
 - Password reset using OTP emailed to the registered address
 - Set preferred location to view available shows
-- Browse all movies and filter by city & state
+- Browse all movies and filter by city, state, language, genre, duration, and show time
 - View movie details with cast, reviews, average rating
 - Post and delete own reviews
 - Book tickets (select seats, confirm availability)
@@ -30,6 +30,14 @@ A full-featured web application enabling movie-goers to browse and book shows, t
 - Secure login/logout for admin users
 - View pending host requests
 - Approve or reject requests; actions are applied in the system when approved (e.g., creating a show)
+
+---
+
+## 🎬 Screenshots
+
+You can view screenshots of the project [here](https://drive.google.com/drive/folders/1yS4skCqusPwdfvI5dnyh64qLQNWkciNO?usp=drive_link).
+
+> The screenshots highlight key features of the system.
 
 ---
 
